@@ -11,8 +11,12 @@
   "description": "",
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
+    "@supabase/supabase-js": "^2.50.3",
+    "dotenv": "^17.1.0",
     "express": "^5.1.0",
     "jsdom": "^26.1.0",
-    "puppeteer": "^24.12.0"
+    "pdfkit": "^0.17.1",
+    "puppeteer": "^24.12.0",
+    "stream": "^0.0.3"
   }
 }
