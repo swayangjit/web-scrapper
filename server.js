@@ -96,8 +96,8 @@ app.get('/extract', async (req, res) => {
 
 // 🔐 HTTPS Setup
 const sslOptions = {
-  key: fs.readFileSync('/etc/ssl/private/selfsigned.key'),
-  cert: fs.readFileSync('/etc/ssl/private/selfsigned.crt'),
+  key: fs.readFileSync('./selfsigned.key'),
+  cert: fs.readFileSync('./selfsigned.crt'),
 };
 
 const PORT = process.env.PORT || 3000;
