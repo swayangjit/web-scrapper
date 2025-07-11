@@ -1,3 +1,5 @@
+const fs = require('fs');
+const https = require('https');
 const express = require('express');
 const puppeteer = require('puppeteer');
 const { Readability } = require('@mozilla/readability');
@@ -5,8 +7,7 @@ const { JSDOM } = require('jsdom');
 const PDFDocument = require('pdfkit');
 const { createClient } = require('@supabase/supabase-js');
 const stream = require('stream');
-
-require('dotenv').config(); // for loading Supabase env vars
+require('dotenv').config(); // Load Supabase env vars
 
 const app = express();
 app.use(express.json());
@@ -93,7 +94,14 @@ app.get('/extract', async (req, res) => {
   }
 });
 
+// 🔐 HTTPS Setup
+const sslOptions = {
+  key: fs.readFileSync('/etc/ssl/private/selfsigned.key'),
+  cert: fs.readFileSync('/etc/ssl/private/selfsigned.crt'),
+};
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+
+https.createServer(sslOptions, app).listen(PORT, () => {
+  console.log(`✅ HTTPS server running at https://<your-ip>:${PORT}/extract?url=https://example.com`);
 });
