@@ -176,6 +176,17 @@ app.post('/generateLearningPath', async (req, res) => {
 // 🔐 Server Setup
 const PORT = process.env.PORT || 3003;
 
-http.createServer(app).listen(PORT, () => {
-  console.log(`🌐 HTTP server running at http://localhost:${PORT}`);
+// HTTPS certs
+const sslOptions = {
+  key: fs.readFileSync('./selfsigned.key'), // or '/etc/ssl/private/selfsigned.key'
+  cert: fs.readFileSync('./selfsigned.crt') // or '/etc/ssl/private/selfsigned.crt'
+};
+
+// Start HTTPS server
+https.createServer(sslOptions, app).listen(HTTPS_PORT, () => {
+  console.log(`🔐 HTTPS server running at https://localhost:${PORT}`);
 });
+
+// http.createServer(app).listen(PORT, () => {
+//   console.log(`🌐 HTTP server running at http://localhost:${PORT}`);
+// });
