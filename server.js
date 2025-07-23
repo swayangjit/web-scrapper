@@ -7,10 +7,14 @@ const { Readability } = require('@mozilla/readability');
 const { JSDOM } = require('jsdom');
 const PDFDocument = require('pdfkit');
 const stream = require('stream');
+const cors = require('cors');
+
 require('dotenv').config(); // Load Supabase env vars
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
+// ✅ Enable CORS for all routes
+app.use(cors());
 app.use(express.json());
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
@@ -120,10 +124,19 @@ app.post('/generateLearningPath', async (req, res) => {
   let browser;
 
   try {
-    browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+    browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      const type = req.resourceType();
+      if (['image', 'stylesheet', 'font'].includes(type)) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });  
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
 
     const html = await page.content();
     const dom = new JSDOM(html, { url });
